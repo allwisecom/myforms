@@ -10,7 +10,7 @@ const myRouterTree = createBrowserRouter([
   {
     path: '/contact',
     element: <ContactPage />,
-    action: contactPageAction,
+    //action: contactPageAction,
 
     //form data after collecting goes to the action callback, we can return a redirect response to navigate to the thank you page. We can also pass the name of the user as a parameter in the URL to display it on the thank you page.
   },
