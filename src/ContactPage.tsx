@@ -1,6 +1,8 @@
 import { FormEvent } from 'react';
 import { ActionFunctionArgs, Form, redirect, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { appendErrors, FieldError, useForm } from 'react-hook-form';
+import { get } from 'http';
+import { ValidationError } from './ValidationError';
 
 type Contact = {
   name: string;
@@ -12,7 +14,11 @@ type Contact = {
 export function ContactPage() {
   const fieldStyle = 'flex flex-col mb-2';
 
-  const { register, handleSubmit } = useForm<Contact>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }, //isloading, isDirty, isValid, touchedFields, dirtyFields
+  } = useForm<Contact>({ mode: 'onBlur', reValidateMode: 'onBlur' }); // if you go the form and revisit the form the validation messages shows up.
 
   const navigate = useNavigate();
 
@@ -26,9 +32,13 @@ export function ContactPage() {
 
   function handleFormSubmit(contact: Contact) {
     console.log('form submit callback invoked. Contact details: ', contact);
-    //navigate(`/thank-you/${contact.name}`);
+    navigate(`/thank-you/${contact.name}`); //hashbang - state change - hook
 
-    return redirect(`/thank-you/${contact.name}`); //redirect works like hashbang
+    //return redirect(`/thank-you/${contact.name}`); //redirect works like hashbang
+  }
+
+  function getEditorStyle(fieldError: FieldError | undefined) {
+    return fieldError ? 'border-red-500' : '';
   }
   //   function handleSubmit(e: FormEvent<HTMLFormElement>) {
   //     e.preventDefault();
@@ -52,17 +62,22 @@ export function ContactPage() {
       <h2 className="text-3xl font-bold underline mb-3">Contact Us</h2>
       <p className="mb-3">If you enter your details we'll get back to you as soon as we can.</p>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)}>
+      <form noValidate onSubmit={handleSubmit(handleFormSubmit)}>
         <div className={fieldStyle}>
           <label htmlFor="name">Your name</label>
           <input
             type="text"
             id="name"
             //name="name"
-            {...register('name')}
+            {...register('name', {
+              required: 'Name is required',
+              minLength: { value: 2, message: 'Name must be at least 2 characters' },
+            })}
+            className={getEditorStyle(errors.name)}
             //required
             //onChange={(e) => setContact({ ...contact, name: e.target.value })}
           />
+          <ValidationError fieldError={errors.name} />
         </div>
         <div className={fieldStyle}>
           <label htmlFor="email">Your email address</label>
@@ -73,17 +88,20 @@ export function ContactPage() {
             {...register('email')}
             //required
             pattern='\S+@S+\.\S+"'
+            className={getEditorStyle(errors.email)}
             //onChange={(e) => setContact({ ...contact, email: e.target.value })}
           />
+          <ValidationError fieldError={errors.email} />
         </div>
         <div className={fieldStyle}>
           <label htmlFor="reason">Reason you need to contact us</label>
-          <select id="reason" {...register('reason')} required>
+          <select id="reason" {...register('reason')} className={getEditorStyle(errors.reason)}>
             <option value=""></option>
             <option value="Support">Support</option>
             <option value="Feedback">Feedback</option>
             <option value="Other">Other</option>
           </select>
+          <ValidationError fieldError={errors.reason} />
         </div>
         <div className={fieldStyle}>
           <label htmlFor="notes">Additional notes</label>
@@ -91,6 +109,7 @@ export function ContactPage() {
             id="notes"
             //name="notes"
             {...register('notes')}
+            className={getEditorStyle(errors.notes)}
             //name property we use to collect the data by form element in handleSubmit callback
             //onChange={(e) => setContact({ ...contact, notes: e.target.value })}
           />
@@ -104,6 +123,15 @@ export function ContactPage() {
     </div>
   );
 }
+
+//errors object
+
+// errors{
+//   name: {
+//     type: 'required',
+//     message: 'Name is required'
+//   }
+// }
 
 // export async function contactPageAction({ request }: ActionFunctionArgs) {
 //   const formData = await request.formData(); // .then() - waits foor promise to resolve.

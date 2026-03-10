@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
-import { ContactPage, contactPageAction } from './ContactPage';
+import { ContactPage } from './ContactPage';
 import { ThankYouPage } from './ThankYouPage';
 
 const myRouterTree = createBrowserRouter([

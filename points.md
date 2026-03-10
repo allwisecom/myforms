@@ -93,3 +93,51 @@ function handleFormSubmit(){
 react hooks validation works on <form> constrol
 
 <Form > when use this control we need action callback and redirect
+
+// controlled fields - utilize the state hooks to gather data from form controls
+// -- too many renders - against performance
+
+// Native API - FormData -- <input name='email'/> const fd = new FormData() ;
+// fd.get('email')
+// the number of re-render's have been reduced.
+
+// React Router Form -
+
+// Validation of forms
+
+// Native validation - constraint validation API - Browser incompatibility , lack of uniformity -- lack of customization
+
+// 3rd party - RHF (React Hook Forms)
+
+noValidate tells the browser to not validate from browser side.
+
+Formik = Form Validation .
+
+Performance - RHF
+
+Customization - RHF
+
+errors
+{
+email: {
+required: 'You must enter your email address',
+pattern: {
+message: 'Entered value does not match email format',
+},
+}
+}
+
+Navigate vs redirect
+
+it is part of router tree
+Navigate use to navigate if dont have default page ..
+state changes in browser url with this so called hashbang
+
+path : "/"
+elelment : <Navigate to="/contact" /> //dedicated component - no
+
+explicit user click not required.
+
+--> Link and Navkink user to click an event
+
+redirect
